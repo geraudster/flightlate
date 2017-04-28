@@ -1,0 +1,35 @@
+entity Flight {
+	Year Integer,
+    Month Integer,
+    DayOfMonth Integer,
+    DayOfWeek Integer,
+    DepTime Integer,
+    FlightNum String,
+}
+
+entity Carrier {
+	code String,
+    name String
+}
+
+entity Airport {
+	iata String,
+    lon Float,
+    lat Float,
+    name String
+}
+
+relationship ManyToOne {
+	Flight{Origin} to Airport,
+	Flight{Dest} to Airport,
+    Flight{UniqueCarrier} to Carrier
+}
+
+
+dto * with mapstruct
+
+// Set service options to all except few
+service all with serviceImpl
+// Set an angular suffix
+angularSuffix * with mySuffix
+

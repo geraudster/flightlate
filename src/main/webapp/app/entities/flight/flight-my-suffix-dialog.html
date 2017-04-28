@@ -1,0 +1,80 @@
+
+<form name="editForm" role="form" novalidate ng-submit="vm.save()">
+
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"
+                ng-click="vm.clear()">&times;</button>
+        <h4 class="modal-title" id="myFlightLabel">Create or edit a Flight</h4>
+    </div>
+    <div class="modal-body">
+        <jhi-alert-error></jhi-alert-error>
+        <div class="form-group" ng-show="vm.flight.id">
+            <label for="id">ID</label>
+            <input type="text" class="form-control" id="id" name="id"
+                    ng-model="vm.flight.id" readonly />
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="field_year">Year</label>
+            <input type="number" class="form-control" name="year" id="field_year"
+                    ng-model="vm.flight.year"
+                    />
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="field_month">Month</label>
+            <input type="number" class="form-control" name="month" id="field_month"
+                    ng-model="vm.flight.month"
+                    />
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="field_dayOfMonth">Day Of Month</label>
+            <input type="number" class="form-control" name="dayOfMonth" id="field_dayOfMonth"
+                    ng-model="vm.flight.dayOfMonth"
+                    />
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="field_dayOfWeek">Day Of Week</label>
+            <input type="number" class="form-control" name="dayOfWeek" id="field_dayOfWeek"
+                    ng-model="vm.flight.dayOfWeek"
+                    />
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="field_depTime">Dep Time</label>
+            <input type="number" class="form-control" name="depTime" id="field_depTime"
+                    ng-model="vm.flight.depTime"
+                    />
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="field_flightNum">Flight Num</label>
+            <input type="text" class="form-control" name="flightNum" id="field_flightNum"
+                    ng-model="vm.flight.flightNum"
+                    />
+        </div>
+
+        <div class="form-group">
+            <label for="field_origin">Origin</label>
+            <select class="form-control" id="field_origin" name="origin" ng-model="vm.flight.originId" ng-options="airport.id as airport.id for airport in vm.airports"            >
+                <option value=""></option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="field_dest">Dest</label>
+            <select class="form-control" id="field_dest" name="dest" ng-model="vm.flight.destId" ng-options="airport.id as airport.id for airport in vm.airports"            >
+                <option value=""></option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="field_uniqueCarrier">Unique Carrier</label>
+            <select class="form-control" id="field_uniqueCarrier" name="uniqueCarrier" ng-model="vm.flight.uniqueCarrierId" ng-options="carrier.id as carrier.id for carrier in vm.carriers"            >
+                <option value=""></option>
+            </select>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="vm.clear()">
+            <span class="glyphicon glyphicon-ban-circle"></span>&nbsp;<span>Cancel</span>
+        </button>
+        <button type="submit" ng-disabled="editForm.$invalid || vm.isSaving" class="btn btn-primary">
+            <span class="glyphicon glyphicon-save"></span>&nbsp;<span>Save</span>
+        </button>
+    </div>
+</form>

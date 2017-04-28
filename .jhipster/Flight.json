@@ -1,0 +1,55 @@
+{
+    "fluentMethods": true,
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "relationshipName": "origin",
+            "otherEntityName": "airport",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "relationshipName": "dest",
+            "otherEntityName": "airport",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "relationshipName": "uniqueCarrier",
+            "otherEntityName": "carrier",
+            "otherEntityField": "id"
+        }
+    ],
+    "fields": [
+        {
+            "fieldName": "year",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "month",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "dayOfMonth",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "dayOfWeek",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "depTime",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "flightNum",
+            "fieldType": "String"
+        }
+    ],
+    "changelogDate": "20170428093157",
+    "entityTableName": "flight",
+    "dto": "mapstruct",
+    "pagination": "no",
+    "service": "serviceImpl",
+    "angularJSSuffix": "mySuffix"
+}

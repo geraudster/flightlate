@@ -1,0 +1,55 @@
+
+<div>
+    <h2><span>Flight</span> {{vm.flight.id}}</h2>
+    <hr>
+    <jhi-alert-error></jhi-alert-error>
+    <dl class="dl-horizontal jh-entity-details">
+        <dt><span>Year</span></dt>
+        <dd>
+            <span>{{vm.flight.year}}</span>
+        </dd>
+        <dt><span>Month</span></dt>
+        <dd>
+            <span>{{vm.flight.month}}</span>
+        </dd>
+        <dt><span>Day Of Month</span></dt>
+        <dd>
+            <span>{{vm.flight.dayOfMonth}}</span>
+        </dd>
+        <dt><span>Day Of Week</span></dt>
+        <dd>
+            <span>{{vm.flight.dayOfWeek}}</span>
+        </dd>
+        <dt><span>Dep Time</span></dt>
+        <dd>
+            <span>{{vm.flight.depTime}}</span>
+        </dd>
+        <dt><span>Flight Num</span></dt>
+        <dd>
+            <span>{{vm.flight.flightNum}}</span>
+        </dd>
+        <dt><span>Origin</span></dt>
+        <dd>
+            <a ui-sref="airport-my-suffix-detail({id:vm.flight.originId})">{{vm.flight.originId}}</a>
+        </dd>
+        <dt><span>Dest</span></dt>
+        <dd>
+            <a ui-sref="airport-my-suffix-detail({id:vm.flight.destId})">{{vm.flight.destId}}</a>
+        </dd>
+        <dt><span>Unique Carrier</span></dt>
+        <dd>
+            <a ui-sref="carrier-my-suffix-detail({id:vm.flight.uniqueCarrierId})">{{vm.flight.uniqueCarrierId}}</a>
+        </dd>
+    </dl>
+
+    <button type="submit"
+            ui-sref="{{ vm.previousState }}"
+            class="btn btn-info">
+        <span class="glyphicon glyphicon-arrow-left"></span>&nbsp;<span> Back</span>
+    </button>
+
+    <button type="button" ui-sref="flight-my-suffix-detail.edit({id:vm.flight.id})" class="btn btn-primary">
+        <span class="glyphicon glyphicon-pencil"></span>
+        <span class="hidden-sm-down"> Edit</span>
+    </button>
+</div>
