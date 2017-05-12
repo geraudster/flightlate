@@ -48,8 +48,7 @@
     ],
     "changelogDate": "20170428093157",
     "entityTableName": "flight",
-    "dto": "mapstruct",
+    "dto": "no",
     "pagination": "no",
-    "service": "serviceImpl",
-    "angularJSSuffix": "mySuffix"
+    "service": "no"
 }

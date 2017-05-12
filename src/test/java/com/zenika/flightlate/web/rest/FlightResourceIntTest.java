@@ -4,9 +4,6 @@ import com.zenika.flightlate.FlightlateApp;
 
 import com.zenika.flightlate.domain.Flight;
 import com.zenika.flightlate.repository.FlightRepository;
-import com.zenika.flightlate.service.FlightService;
-import com.zenika.flightlate.service.dto.FlightDTO;
-import com.zenika.flightlate.service.mapper.FlightMapper;
 import com.zenika.flightlate.web.rest.errors.ExceptionTranslator;
 
 import org.junit.Before;
@@ -62,12 +59,6 @@ public class FlightResourceIntTest {
     private FlightRepository flightRepository;
 
     @Autowired
-    private FlightMapper flightMapper;
-
-    @Autowired
-    private FlightService flightService;
-
-    @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
 
     @Autowired
@@ -86,7 +77,7 @@ public class FlightResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        FlightResource flightResource = new FlightResource(flightService);
+        FlightResource flightResource = new FlightResource(flightRepository);
         this.restFlightMockMvc = MockMvcBuilders.standaloneSetup(flightResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -121,10 +112,9 @@ public class FlightResourceIntTest {
         int databaseSizeBeforeCreate = flightRepository.findAll().size();
 
         // Create the Flight
-        FlightDTO flightDTO = flightMapper.flightToFlightDTO(flight);
         restFlightMockMvc.perform(post("/api/flights")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(flightDTO)))
+            .content(TestUtil.convertObjectToJsonBytes(flight)))
             .andExpect(status().isCreated());
 
         // Validate the Flight in the database
@@ -146,12 +136,11 @@ public class FlightResourceIntTest {
 
         // Create the Flight with an existing ID
         flight.setId(1L);
-        FlightDTO flightDTO = flightMapper.flightToFlightDTO(flight);
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restFlightMockMvc.perform(post("/api/flights")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(flightDTO)))
+            .content(TestUtil.convertObjectToJsonBytes(flight)))
             .andExpect(status().isBadRequest());
 
         // Validate the Alice in the database
@@ -221,11 +210,10 @@ public class FlightResourceIntTest {
             .dayOfWeek(UPDATED_DAY_OF_WEEK)
             .depTime(UPDATED_DEP_TIME)
             .flightNum(UPDATED_FLIGHT_NUM);
-        FlightDTO flightDTO = flightMapper.flightToFlightDTO(updatedFlight);
 
         restFlightMockMvc.perform(put("/api/flights")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(flightDTO)))
+            .content(TestUtil.convertObjectToJsonBytes(updatedFlight)))
             .andExpect(status().isOk());
 
         // Validate the Flight in the database
@@ -246,12 +234,11 @@ public class FlightResourceIntTest {
         int databaseSizeBeforeUpdate = flightRepository.findAll().size();
 
         // Create the Flight
-        FlightDTO flightDTO = flightMapper.flightToFlightDTO(flight);
 
         // If the entity doesn't have an ID, it will be created instead of just being updated
         restFlightMockMvc.perform(put("/api/flights")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(flightDTO)))
+            .content(TestUtil.convertObjectToJsonBytes(flight)))
             .andExpect(status().isCreated());
 
         // Validate the Flight in the database

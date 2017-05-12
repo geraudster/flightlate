@@ -2,6 +2,7 @@ package com.zenika.flightlate.web.rest;
 
 import com.zenika.flightlate.domain.Flight;
 import com.zenika.flightlate.domain.FlightPrediction;
+import com.zenika.flightlate.domain.FlightView;
 import com.zenika.flightlate.service.FlightislateService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +20,7 @@ public class FlightisLateResource {
     }
 
     @PostMapping("/flight")
-    public FlightPrediction islate(@RequestBody Flight flight) {
-        FlightPrediction prediction = service.predictFlight(flight);
-        return prediction;
+    public FlightPrediction islate(@RequestBody FlightView flight) {
+        return service.predictFlight(flight);
     }
 }

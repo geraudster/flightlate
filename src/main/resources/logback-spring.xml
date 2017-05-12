@@ -23,6 +23,8 @@
 -->
 
     <logger name="com.zenika.flightlate" level="#logback.loglevel#"/>
+    <logger name="org.apache.spark" level="WARN"/>
+    <logger name="org.spark_project" level="WARN"/>
 
     <logger name="io.github.jhipster" level="DEBUG"/>
 

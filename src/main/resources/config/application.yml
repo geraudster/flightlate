@@ -104,3 +104,4 @@ jhipster:
 # ===================================================================
 
 application:
+    model-location: file:///d:/data/airport/airplane-model

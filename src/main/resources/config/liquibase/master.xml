@@ -9,8 +9,6 @@
     <include file="classpath:config/liquibase/changelog/20170428093158_added_entity_Carrier.xml" relativeToChangelogFile="false"/>
     <include file="classpath:config/liquibase/changelog/20170428093159_added_entity_Airport.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
-    <include file="classpath:config/liquibase/changelog/20170428093158_added_entity_constraints_Carrier.xml" relativeToChangelogFile="false"/>
-    <include file="classpath:config/liquibase/changelog/20170428093159_added_entity_constraints_Airport.xml" relativeToChangelogFile="false"/>
     <include file="classpath:config/liquibase/changelog/20170428093157_added_entity_constraints_Flight.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
 </databaseChangeLog>

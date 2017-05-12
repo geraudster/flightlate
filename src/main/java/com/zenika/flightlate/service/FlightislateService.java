@@ -1,58 +1,65 @@
 package com.zenika.flightlate.service;
 
-import com.zenika.flightlate.domain.Flight;
+import com.zenika.flightlate.config.ApplicationProperties;
 import com.zenika.flightlate.domain.FlightPrediction;
-import org.apache.spark.ml.Pipeline;
+import com.zenika.flightlate.domain.FlightView;
 import org.apache.spark.ml.PipelineModel;
-import org.apache.spark.sql.*;
-import org.apache.spark.sql.types.DataTypes;
-import org.apache.spark.sql.types.StructType;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.RowFactory;
+import org.apache.spark.sql.SparkSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.apache.spark.sql.functions.col;
+import static org.apache.spark.sql.types.DataTypes.*;
 
 @Service
 @Transactional
 public class FlightislateService {
 
     private final Logger log = LoggerFactory.getLogger(FlightislateService.class);
-    private final static SparkSession spark;
-    private final static PipelineModel model;
+    private final SparkSession spark;
+    private final PipelineModel model;
 
-    static {
+    @Autowired
+    public FlightislateService(ApplicationProperties properties) {
+        log.info("Loading model at {}", properties.getModelLocation());
         spark = SparkSession.builder().appName("Airplane Predict").master("local[1]").getOrCreate();
-        model = PipelineModel.load("/home/geraud/data/airplane-model");
+        model = PipelineModel.load(properties.getModelLocation());
     }
 
-    public FlightPrediction predictFlight(Flight flight) {
+    public FlightPrediction predictFlight(FlightView flightView) {
         //'Year', 'Month', 'DayOfMonth', 'DayOfWeek', 'DepTime', 'UniqueCarrierIndex', 'FlightNumIndex', 'OriginIndex', 'DestIndex'
-        Dataset<Row> flightDf = spark.createDataFrame(Arrays.asList(RowFactory.create(flight.getYear(),
-            flight.getMonth(),
-            flight.getDayOfMonth(),
-            flight.getDayOfWeek(),
-            flight.getDepTime(),
-            flight.getUniqueCarrier().getCode(),
-            flight.getFlightNum(),
-            flight.getOrigin().getIata(),
-            flight.getDest().getIata())),
-            DataTypes.createStructType(Arrays.asList(
-                DataTypes.createStructField("Year", DataTypes.IntegerType, true),
-                DataTypes.createStructField("Month", DataTypes.IntegerType, true),
-                DataTypes.createStructField("DayOfMonth", DataTypes.IntegerType, true),
-                DataTypes.createStructField("DayOfWeek", DataTypes.IntegerType, true),
-                DataTypes.createStructField("DepTime", DataTypes.IntegerType, true),
-                DataTypes.createStructField("UniqueCarrier", DataTypes.StringType, true),
-                DataTypes.createStructField("FlightNum", DataTypes.StringType, true),
-                DataTypes.createStructField("Origin", DataTypes.StringType, true),
-                DataTypes.createStructField("Dest", DataTypes.StringType, true)
+        Dataset<Row> flightDf = spark.createDataFrame(Collections.singletonList(RowFactory.create(flightView.getYear(),
+            flightView.getMonth(),
+            flightView.getDayOfMonth(),
+            flightView.getDayOfWeek(),
+            flightView.getDepTime(),
+            flightView.getUniqueCarrier(),
+            flightView.getFlightNum(),
+            flightView.getOrigin(),
+            flightView.getDest())),
+            createStructType(Arrays.asList(
+                createStructField("Year", StringType, true),
+                createStructField("Month", StringType, true),
+                createStructField("DayOfMonth", StringType, true),
+                createStructField("DayOfWeek", StringType, true),
+                createStructField("DepTime", IntegerType, true),
+                createStructField("UniqueCarrier", StringType, true),
+                createStructField("FlightNum", StringType, true),
+                createStructField("Origin", StringType, true),
+                createStructField("Dest", StringType, true)
             )));
+        flightDf.show();
         model.transform(flightDf).show();
-        boolean prediction = model.transform(flightDf).select(col("prediction").cast(DataTypes.IntegerType)).first().getInt(0) == 1;
+        boolean prediction = model.transform(flightDf).select(col("prediction").cast(IntegerType)).first().getInt(0) == 1;
         FlightPrediction result = new FlightPrediction();
         result.setLate(prediction);
         return result;

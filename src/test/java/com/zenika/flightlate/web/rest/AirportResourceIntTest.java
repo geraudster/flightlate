@@ -4,9 +4,6 @@ import com.zenika.flightlate.FlightlateApp;
 
 import com.zenika.flightlate.domain.Airport;
 import com.zenika.flightlate.repository.AirportRepository;
-import com.zenika.flightlate.service.AirportService;
-import com.zenika.flightlate.service.dto.AirportDTO;
-import com.zenika.flightlate.service.mapper.AirportMapper;
 import com.zenika.flightlate.web.rest.errors.ExceptionTranslator;
 
 import org.junit.Before;
@@ -56,12 +53,6 @@ public class AirportResourceIntTest {
     private AirportRepository airportRepository;
 
     @Autowired
-    private AirportMapper airportMapper;
-
-    @Autowired
-    private AirportService airportService;
-
-    @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
 
     @Autowired
@@ -80,7 +71,7 @@ public class AirportResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        AirportResource airportResource = new AirportResource(airportService);
+        AirportResource airportResource = new AirportResource(airportRepository);
         this.restAirportMockMvc = MockMvcBuilders.standaloneSetup(airportResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -113,10 +104,9 @@ public class AirportResourceIntTest {
         int databaseSizeBeforeCreate = airportRepository.findAll().size();
 
         // Create the Airport
-        AirportDTO airportDTO = airportMapper.airportToAirportDTO(airport);
         restAirportMockMvc.perform(post("/api/airports")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(airportDTO)))
+            .content(TestUtil.convertObjectToJsonBytes(airport)))
             .andExpect(status().isCreated());
 
         // Validate the Airport in the database
@@ -136,12 +126,11 @@ public class AirportResourceIntTest {
 
         // Create the Airport with an existing ID
         airport.setId(1L);
-        AirportDTO airportDTO = airportMapper.airportToAirportDTO(airport);
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restAirportMockMvc.perform(post("/api/airports")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(airportDTO)))
+            .content(TestUtil.convertObjectToJsonBytes(airport)))
             .andExpect(status().isBadRequest());
 
         // Validate the Alice in the database
@@ -205,11 +194,10 @@ public class AirportResourceIntTest {
             .lon(UPDATED_LON)
             .lat(UPDATED_LAT)
             .name(UPDATED_NAME);
-        AirportDTO airportDTO = airportMapper.airportToAirportDTO(updatedAirport);
 
         restAirportMockMvc.perform(put("/api/airports")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(airportDTO)))
+            .content(TestUtil.convertObjectToJsonBytes(updatedAirport)))
             .andExpect(status().isOk());
 
         // Validate the Airport in the database
@@ -228,12 +216,11 @@ public class AirportResourceIntTest {
         int databaseSizeBeforeUpdate = airportRepository.findAll().size();
 
         // Create the Airport
-        AirportDTO airportDTO = airportMapper.airportToAirportDTO(airport);
 
         // If the entity doesn't have an ID, it will be created instead of just being updated
         restAirportMockMvc.perform(put("/api/airports")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(airportDTO)))
+            .content(TestUtil.convertObjectToJsonBytes(airport)))
             .andExpect(status().isCreated());
 
         // Validate the Airport in the database

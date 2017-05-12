@@ -4,6 +4,8 @@
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
 
     <logger name="com.zenika.flightlate" level="INFO"/>
+    <logger name="org.apache.spark" level="WARN"/>
+    <logger name="org.spark_project" level="WARN"/>
 
     <logger name="io.github.jhipster" level="WARN"/>
 

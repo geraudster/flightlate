@@ -1,9 +1,10 @@
 package com.zenika.flightlate.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
-import com.zenika.flightlate.service.FlightService;
+import com.zenika.flightlate.domain.Flight;
+
+import com.zenika.flightlate.repository.FlightRepository;
 import com.zenika.flightlate.web.rest.util.HeaderUtil;
-import com.zenika.flightlate.service.dto.FlightDTO;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,10 +13,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * REST controller for managing Flight.
@@ -28,27 +27,27 @@ public class FlightResource {
 
     private static final String ENTITY_NAME = "flight";
         
-    private final FlightService flightService;
+    private final FlightRepository flightRepository;
 
-    public FlightResource(FlightService flightService) {
-        this.flightService = flightService;
+    public FlightResource(FlightRepository flightRepository) {
+        this.flightRepository = flightRepository;
     }
 
     /**
      * POST  /flights : Create a new flight.
      *
-     * @param flightDTO the flightDTO to create
-     * @return the ResponseEntity with status 201 (Created) and with body the new flightDTO, or with status 400 (Bad Request) if the flight has already an ID
+     * @param flight the flight to create
+     * @return the ResponseEntity with status 201 (Created) and with body the new flight, or with status 400 (Bad Request) if the flight has already an ID
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PostMapping("/flights")
     @Timed
-    public ResponseEntity<FlightDTO> createFlight(@RequestBody FlightDTO flightDTO) throws URISyntaxException {
-        log.debug("REST request to save Flight : {}", flightDTO);
-        if (flightDTO.getId() != null) {
+    public ResponseEntity<Flight> createFlight(@RequestBody Flight flight) throws URISyntaxException {
+        log.debug("REST request to save Flight : {}", flight);
+        if (flight.getId() != null) {
             return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "idexists", "A new flight cannot already have an ID")).body(null);
         }
-        FlightDTO result = flightService.save(flightDTO);
+        Flight result = flightRepository.save(flight);
         return ResponseEntity.created(new URI("/api/flights/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
@@ -57,22 +56,22 @@ public class FlightResource {
     /**
      * PUT  /flights : Updates an existing flight.
      *
-     * @param flightDTO the flightDTO to update
-     * @return the ResponseEntity with status 200 (OK) and with body the updated flightDTO,
-     * or with status 400 (Bad Request) if the flightDTO is not valid,
-     * or with status 500 (Internal Server Error) if the flightDTO couldnt be updated
+     * @param flight the flight to update
+     * @return the ResponseEntity with status 200 (OK) and with body the updated flight,
+     * or with status 400 (Bad Request) if the flight is not valid,
+     * or with status 500 (Internal Server Error) if the flight couldnt be updated
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PutMapping("/flights")
     @Timed
-    public ResponseEntity<FlightDTO> updateFlight(@RequestBody FlightDTO flightDTO) throws URISyntaxException {
-        log.debug("REST request to update Flight : {}", flightDTO);
-        if (flightDTO.getId() == null) {
-            return createFlight(flightDTO);
+    public ResponseEntity<Flight> updateFlight(@RequestBody Flight flight) throws URISyntaxException {
+        log.debug("REST request to update Flight : {}", flight);
+        if (flight.getId() == null) {
+            return createFlight(flight);
         }
-        FlightDTO result = flightService.save(flightDTO);
+        Flight result = flightRepository.save(flight);
         return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, flightDTO.getId().toString()))
+            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, flight.getId().toString()))
             .body(result);
     }
 
@@ -83,36 +82,37 @@ public class FlightResource {
      */
     @GetMapping("/flights")
     @Timed
-    public List<FlightDTO> getAllFlights() {
+    public List<Flight> getAllFlights() {
         log.debug("REST request to get all Flights");
-        return flightService.findAll();
+        List<Flight> flights = flightRepository.findAll();
+        return flights;
     }
 
     /**
      * GET  /flights/:id : get the "id" flight.
      *
-     * @param id the id of the flightDTO to retrieve
-     * @return the ResponseEntity with status 200 (OK) and with body the flightDTO, or with status 404 (Not Found)
+     * @param id the id of the flight to retrieve
+     * @return the ResponseEntity with status 200 (OK) and with body the flight, or with status 404 (Not Found)
      */
     @GetMapping("/flights/{id}")
     @Timed
-    public ResponseEntity<FlightDTO> getFlight(@PathVariable Long id) {
+    public ResponseEntity<Flight> getFlight(@PathVariable Long id) {
         log.debug("REST request to get Flight : {}", id);
-        FlightDTO flightDTO = flightService.findOne(id);
-        return ResponseUtil.wrapOrNotFound(Optional.ofNullable(flightDTO));
+        Flight flight = flightRepository.findOne(id);
+        return ResponseUtil.wrapOrNotFound(Optional.ofNullable(flight));
     }
 
     /**
      * DELETE  /flights/:id : delete the "id" flight.
      *
-     * @param id the id of the flightDTO to delete
+     * @param id the id of the flight to delete
      * @return the ResponseEntity with status 200 (OK)
      */
     @DeleteMapping("/flights/{id}")
     @Timed
     public ResponseEntity<Void> deleteFlight(@PathVariable Long id) {
         log.debug("REST request to delete Flight : {}", id);
-        flightService.delete(id);
+        flightRepository.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
 

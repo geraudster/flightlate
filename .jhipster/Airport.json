@@ -21,8 +21,7 @@
     ],
     "changelogDate": "20170428093159",
     "entityTableName": "airport",
-    "dto": "mapstruct",
+    "dto": "no",
     "pagination": "no",
-    "service": "serviceImpl",
-    "angularJSSuffix": "mySuffix"
+    "service": "no"
 }

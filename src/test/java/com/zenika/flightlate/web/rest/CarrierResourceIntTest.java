@@ -4,9 +4,6 @@ import com.zenika.flightlate.FlightlateApp;
 
 import com.zenika.flightlate.domain.Carrier;
 import com.zenika.flightlate.repository.CarrierRepository;
-import com.zenika.flightlate.service.CarrierService;
-import com.zenika.flightlate.service.dto.CarrierDTO;
-import com.zenika.flightlate.service.mapper.CarrierMapper;
 import com.zenika.flightlate.web.rest.errors.ExceptionTranslator;
 
 import org.junit.Before;
@@ -50,12 +47,6 @@ public class CarrierResourceIntTest {
     private CarrierRepository carrierRepository;
 
     @Autowired
-    private CarrierMapper carrierMapper;
-
-    @Autowired
-    private CarrierService carrierService;
-
-    @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
 
     @Autowired
@@ -74,7 +65,7 @@ public class CarrierResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        CarrierResource carrierResource = new CarrierResource(carrierService);
+        CarrierResource carrierResource = new CarrierResource(carrierRepository);
         this.restCarrierMockMvc = MockMvcBuilders.standaloneSetup(carrierResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -105,10 +96,9 @@ public class CarrierResourceIntTest {
         int databaseSizeBeforeCreate = carrierRepository.findAll().size();
 
         // Create the Carrier
-        CarrierDTO carrierDTO = carrierMapper.carrierToCarrierDTO(carrier);
         restCarrierMockMvc.perform(post("/api/carriers")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(carrierDTO)))
+            .content(TestUtil.convertObjectToJsonBytes(carrier)))
             .andExpect(status().isCreated());
 
         // Validate the Carrier in the database
@@ -126,12 +116,11 @@ public class CarrierResourceIntTest {
 
         // Create the Carrier with an existing ID
         carrier.setId(1L);
-        CarrierDTO carrierDTO = carrierMapper.carrierToCarrierDTO(carrier);
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restCarrierMockMvc.perform(post("/api/carriers")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(carrierDTO)))
+            .content(TestUtil.convertObjectToJsonBytes(carrier)))
             .andExpect(status().isBadRequest());
 
         // Validate the Alice in the database
@@ -189,11 +178,10 @@ public class CarrierResourceIntTest {
         updatedCarrier
             .code(UPDATED_CODE)
             .name(UPDATED_NAME);
-        CarrierDTO carrierDTO = carrierMapper.carrierToCarrierDTO(updatedCarrier);
 
         restCarrierMockMvc.perform(put("/api/carriers")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(carrierDTO)))
+            .content(TestUtil.convertObjectToJsonBytes(updatedCarrier)))
             .andExpect(status().isOk());
 
         // Validate the Carrier in the database
@@ -210,12 +198,11 @@ public class CarrierResourceIntTest {
         int databaseSizeBeforeUpdate = carrierRepository.findAll().size();
 
         // Create the Carrier
-        CarrierDTO carrierDTO = carrierMapper.carrierToCarrierDTO(carrier);
 
         // If the entity doesn't have an ID, it will be created instead of just being updated
         restCarrierMockMvc.perform(put("/api/carriers")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(carrierDTO)))
+            .content(TestUtil.convertObjectToJsonBytes(carrier)))
             .andExpect(status().isCreated());
 
         // Validate the Carrier in the database
